@@ -1,0 +1,59 @@
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.categoryBar {
+  height: 4px;
+  width: 100%;
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+.name {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-medium);
+  margin-bottom: 1rem;
+}
+
+.level {
+  font-weight: 600;
+  color: var(--terracotta);
+}
+
+.dot {
+  color: var(--warm-tan);
+}
+
+.description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-medium);
+  margin-bottom: 1rem;
+}
+
+.instructor {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--olive);
+  margin-bottom: 0;
+}

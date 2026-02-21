@@ -1,0 +1,65 @@
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.short {
+  min-height: 40vh;
+  padding: 4rem 0 3rem;
+}
+
+.full {
+  min-height: 100vh;
+  padding: 6rem 0;
+}
+
+/* Gradient backgrounds */
+.olive {
+  background: linear-gradient(135deg, var(--olive-dark) 0%, var(--olive) 50%, var(--olive-light) 100%);
+}
+
+.rose {
+  background: linear-gradient(135deg, #c08a82 0%, var(--dusty-rose) 50%, var(--dusty-rose-light) 100%);
+}
+
+.tan {
+  background: linear-gradient(135deg, #b8956c 0%, var(--warm-tan) 50%, var(--warm-tan-light) 100%);
+}
+
+.terracotta {
+  background: linear-gradient(135deg, #7a3822 0%, var(--terracotta) 50%, var(--terracotta-light) 100%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  color: var(--cream);
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.subtitle {
+  color: rgba(247, 236, 220, 0.9);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.full .title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+}

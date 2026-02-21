@@ -1,0 +1,172 @@
+/* Philosophy Section */
+.philosophy {
+  background: white;
+}
+
+.philosophyGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+
+.philosophyGrid:last-child {
+  margin-bottom: 0;
+}
+
+.philosophyText p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+  font-size: 0.9rem;
+  gap: 0.25rem;
+}
+
+/* Amenities Section */
+.amenities {
+  background: var(--cream);
+}
+
+.amenitiesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.amenityCard {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.amenityCard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.amenityIcon {
+  color: var(--olive);
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.amenityTitle {
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.amenityDesc {
+  font-size: 0.9rem;
+  color: var(--text-medium);
+  margin-bottom: 0;
+}
+
+/* Location Section */
+.location {
+  background: white;
+}
+
+.locationGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+.locationInfo h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.locationInfo h4:first-child {
+  margin-top: 0;
+}
+
+.locationInfo p {
+  color: var(--text-medium);
+  line-height: 1.6;
+}
+
+.hours {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hours li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-medium);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--cream-dark);
+}
+
+.mapPlaceholder {
+  width: 100%;
+  min-height: 300px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--cream-dark) 0%, var(--warm-tan-light) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-medium);
+  font-style: italic;
+  gap: 0.5rem;
+}
+
+.mapPlaceholder span {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mapPlaceholder p {
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .amenitiesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .philosophyGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .reversed {
+    direction: rtl;
+  }
+
+  .reversed > * {
+    direction: ltr;
+  }
+
+  .amenitiesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .locationGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

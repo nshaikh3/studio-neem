@@ -1,0 +1,81 @@
+/* Pricing Section */
+.pricing {
+  background: white;
+}
+
+.pricingGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* How To Section */
+.howTo {
+  background: var(--cream);
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto 2.5rem;
+}
+
+.step {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.stepNumber {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  color: var(--text-light);
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.stepTitle {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.stepDesc {
+  font-size: 0.95rem;
+  color: var(--text-medium);
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.note {
+  text-align: center;
+  font-style: italic;
+  color: var(--olive);
+  font-size: 0.95rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--olive);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .pricingGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stepsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

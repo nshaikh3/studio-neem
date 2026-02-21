@@ -1,0 +1,81 @@
+.footer {
+  background: var(--olive-dark);
+  color: var(--cream);
+  padding: 3rem 0 1.5rem;
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.footerBrand h3 {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  color: var(--cream);
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  font-size: 0.85rem;
+  color: var(--olive-light);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.footerBrand p:last-child {
+  font-size: 0.85rem;
+  color: var(--warm-tan);
+  line-height: 1.6;
+}
+
+.footerNav h4,
+.footerContact h4 {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: var(--cream);
+  margin-bottom: 1rem;
+}
+
+.footerNav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footerNav a {
+  font-size: 0.9rem;
+  color: var(--warm-tan);
+  transition: color var(--transition);
+}
+
+.footerNav a:hover {
+  color: var(--cream);
+}
+
+.footerContact p {
+  font-size: 0.9rem;
+  color: var(--warm-tan);
+  margin-bottom: 0.5rem;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--olive);
+  margin-bottom: 1.5rem;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--olive-light);
+}
+
+@media (min-width: 768px) {
+  .footerGrid {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+  }
+}

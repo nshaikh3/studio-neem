@@ -1,0 +1,88 @@
+export const classes = [
+  {
+    id: 1,
+    name: 'Sunrise Flow',
+    level: 'All Levels',
+    duration: '60 min',
+    category: 'flow',
+    instructor: 'Priya Sharma',
+    description: 'Start your morning with a gentle, energizing flow. Sun salutations and standing poses build warmth while mindful breathwork centers your mind for the day ahead.',
+  },
+  {
+    id: 2,
+    name: 'Power Vinyasa',
+    level: 'Intermediate',
+    duration: '75 min',
+    category: 'strength',
+    instructor: 'Aisha Johnson',
+    description: 'An athletic, fast-paced practice linking breath to movement. Expect challenging sequences, arm balances, and inversions that build strength and stamina.',
+  },
+  {
+    id: 3,
+    name: 'Restorative Yoga',
+    level: 'Beginner',
+    duration: '60 min',
+    category: 'restorative',
+    instructor: 'Elena Vasquez',
+    description: 'Deeply relaxing, prop-supported poses held for extended periods. This practice activates the parasympathetic nervous system, promoting healing and stress relief.',
+  },
+  {
+    id: 4,
+    name: 'Prenatal Yoga',
+    level: 'All Levels',
+    duration: '60 min',
+    category: 'restorative',
+    instructor: 'Priya Sharma',
+    description: 'A safe, nurturing practice designed for expecting mothers at every stage. Modified poses support your changing body while building strength for birth.',
+  },
+  {
+    id: 5,
+    name: 'Yin Yoga',
+    level: 'Beginner',
+    duration: '75 min',
+    category: 'restorative',
+    instructor: 'Elena Vasquez',
+    description: 'Long-held passive stretches targeting deep connective tissue and fascia. Each pose is held for 3-5 minutes, creating space for profound release and flexibility.',
+  },
+  {
+    id: 6,
+    name: 'Ashtanga Fundamentals',
+    level: 'Intermediate',
+    duration: '90 min',
+    category: 'strength',
+    instructor: 'Aisha Johnson',
+    description: 'An introduction to the traditional Ashtanga primary series. Learn the foundational postures, breathing technique, and flowing transitions of this dynamic practice.',
+  },
+  {
+    id: 7,
+    name: 'Yoga Sculpt',
+    level: 'Advanced',
+    duration: '60 min',
+    category: 'strength',
+    instructor: 'Mei Lin Chen',
+    description: 'Yoga meets strength training. Flowing yoga sequences are combined with light weights and cardio bursts for a full-body workout that tones and energizes.',
+  },
+  {
+    id: 8,
+    name: 'Meditation & Breathwork',
+    level: 'All Levels',
+    duration: '45 min',
+    category: 'meditation',
+    instructor: 'Mei Lin Chen',
+    description: 'Guided pranayama techniques and seated meditation cultivate inner calm and mental clarity. No yoga experience required — just an open mind.',
+  },
+];
+
+export const categoryColors = {
+  flow: '#7E7F41',
+  strength: '#9F4A2D',
+  restorative: '#E1A9A0',
+  meditation: '#D5B794',
+};
+
+export const categoryLabels = {
+  flow: 'Flow',
+  strength: 'Strength',
+  restorative: 'Restorative',
+  meditation: 'Meditation',
+};
