@@ -1,14 +1,16 @@
-import { categoryColors } from '../../data/classes';
+import { useData } from '../../context/DataContext';
 import styles from './ClassCard.module.css';
 
 export default function ClassCard({ classData }) {
+  const { getCategoryColors } = useData();
+  const categoryColors = getCategoryColors();
   const { name, level, duration, category, instructor, description } = classData;
 
   return (
     <div className={styles.card}>
       <div
         className={styles.categoryBar}
-        style={{ backgroundColor: categoryColors[category] }}
+        style={{ backgroundColor: categoryColors[category] || '#ccc' }}
       />
       <div className={styles.content}>
         <h3 className={styles.name}>{name}</h3>

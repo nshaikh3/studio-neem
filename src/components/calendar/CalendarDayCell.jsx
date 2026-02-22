@@ -1,7 +1,10 @@
-import { categoryColors } from '../../data/classes';
+import { useData } from '../../context/DataContext';
 import styles from './CalendarDayCell.module.css';
 
 export default function CalendarDayCell({ day, events, isToday, isOtherMonth, isSelected, onClick }) {
+  const { getCategoryColors } = useData();
+  const categoryColors = getCategoryColors();
+
   if (!day) {
     return <div className={styles.empty} />;
   }
@@ -21,7 +24,7 @@ export default function CalendarDayCell({ day, events, isToday, isOtherMonth, is
             <span
               key={cat}
               className={styles.dot}
-              style={{ backgroundColor: categoryColors[cat] }}
+              style={{ backgroundColor: categoryColors[cat] || '#ccc' }}
             />
           ))}
         </div>

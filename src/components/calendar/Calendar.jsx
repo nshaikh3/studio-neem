@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import CalendarGrid from './CalendarGrid';
 import EventModal from './EventModal';
-import { schedule } from '../../data/schedule';
+import { useData } from '../../context/DataContext';
 import styles from './Calendar.module.css';
 
 const MONTH_NAMES = [
@@ -16,6 +16,9 @@ function formatDateKey(year, month, day) {
 }
 
 export default function Calendar() {
+  const { getSchedule } = useData();
+  const schedule = useMemo(() => getSchedule(), [getSchedule]);
+
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());

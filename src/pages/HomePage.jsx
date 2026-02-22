@@ -2,12 +2,13 @@ import Hero from '../components/shared/Hero';
 import SectionHeading from '../components/shared/SectionHeading';
 import ClassCard from '../components/shared/ClassCard';
 import Button from '../components/shared/Button';
-import { classes } from '../data/classes';
+import { useData } from '../context/DataContext';
 import styles from './HomePage.module.css';
 
-const featured = classes.filter(c => ['Sunrise Flow', 'Restorative Yoga', 'Meditation & Breathwork'].includes(c.name));
-
 export default function HomePage() {
+  const { classes } = useData();
+  const featured = classes.filter(c => c.featured);
+
   return (
     <>
       <Hero

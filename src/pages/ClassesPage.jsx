@@ -2,10 +2,11 @@ import { useState } from 'react';
 import Hero from '../components/shared/Hero';
 import SectionHeading from '../components/shared/SectionHeading';
 import ClassCard from '../components/shared/ClassCard';
-import { classes } from '../data/classes';
+import { useData } from '../context/DataContext';
 import styles from './ClassesPage.module.css';
 
 export default function ClassesPage() {
+  const { classes } = useData();
   const [filter, setFilter] = useState('All');
 
   const filtered = filter === 'All'

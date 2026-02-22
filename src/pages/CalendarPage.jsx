@@ -1,9 +1,11 @@
 import Hero from '../components/shared/Hero';
 import Calendar from '../components/calendar/Calendar';
-import { categoryColors, categoryLabels } from '../data/classes';
+import { useData } from '../context/DataContext';
 import styles from './CalendarPage.module.css';
 
 export default function CalendarPage() {
+  const { categories } = useData();
+
   return (
     <>
       <Hero
@@ -18,13 +20,13 @@ export default function CalendarPage() {
 
           <div className={styles.legend}>
             <span className={styles.legendTitle}>Class Categories:</span>
-            {Object.entries(categoryLabels).map(([key, label]) => (
-              <div key={key} className={styles.legendItem}>
+            {categories.map(cat => (
+              <div key={cat.key} className={styles.legendItem}>
                 <span
                   className={styles.legendDot}
-                  style={{ backgroundColor: categoryColors[key] }}
+                  style={{ backgroundColor: cat.color }}
                 />
-                <span>{label}</span>
+                <span>{cat.label}</span>
               </div>
             ))}
           </div>

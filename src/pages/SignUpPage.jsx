@@ -1,48 +1,8 @@
 import Hero from '../components/shared/Hero';
 import SectionHeading from '../components/shared/SectionHeading';
 import PricingCard from '../components/shared/PricingCard';
+import { useData } from '../context/DataContext';
 import styles from './SignUpPage.module.css';
-
-const pricingTiers = [
-  {
-    name: 'Drop-In',
-    price: '$25',
-    period: 'class',
-    features: [
-      'Single class access',
-      'No commitment required',
-      'Book any available class',
-      'Mat rental available ($5)',
-    ],
-    cta: 'Book a Class',
-  },
-  {
-    name: 'Monthly Unlimited',
-    price: '$140',
-    period: 'month',
-    features: [
-      'Unlimited classes',
-      'Cancel anytime',
-      'Complimentary mat rental',
-      'Priority booking (24h early)',
-      'Tea lounge access',
-    ],
-    cta: 'Start Monthly',
-  },
-  {
-    name: 'Annual Membership',
-    price: '$120',
-    period: 'month',
-    features: [
-      'Everything in Monthly',
-      'Best value (billed annually)',
-      '2 guest passes per month',
-      '10% studio shop discount',
-      'Exclusive member events',
-    ],
-    cta: 'Go Annual',
-  },
-];
 
 const steps = [
   {
@@ -63,6 +23,8 @@ const steps = [
 ];
 
 export default function SignUpPage() {
+  const { memberships } = useData();
+
   return (
     <>
       <Hero
@@ -78,8 +40,8 @@ export default function SignUpPage() {
             subtitle="Flexible plans designed to support your practice, wherever you are on your journey."
           />
           <div className={styles.pricingGrid}>
-            {pricingTiers.map((tier, i) => (
-              <PricingCard key={tier.name} tier={tier} featured={i === 1} />
+            {memberships.map((tier, i) => (
+              <PricingCard key={tier.id} tier={tier} featured={i === 1} />
             ))}
           </div>
         </div>

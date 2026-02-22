@@ -1,0 +1,51 @@
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.th {
+  text-align: left;
+  padding: 0.875rem 1rem;
+  background: #f8f8f8;
+  color: #666;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #eee;
+}
+
+.tr {
+  transition: background 0.2s;
+}
+
+.tr:hover {
+  background: #fafafa;
+}
+
+.td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  color: #2D2D2D;
+  vertical-align: middle;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.empty {
+  padding: 3rem;
+  text-align: center;
+  color: #666;
+}
+
+.empty p {
+  margin: 0;
+}

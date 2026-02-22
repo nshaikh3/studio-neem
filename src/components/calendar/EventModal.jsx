@@ -1,4 +1,4 @@
-import { categoryColors } from '../../data/classes';
+import { useData } from '../../context/DataContext';
 import styles from './EventModal.module.css';
 
 const MONTH_NAMES = [
@@ -7,6 +7,9 @@ const MONTH_NAMES = [
 ];
 
 export default function EventModal({ day, month, year, events, onClose }) {
+  const { getCategoryColors } = useData();
+  const categoryColors = getCategoryColors();
+
   if (!day) return null;
 
   const dateStr = `${MONTH_NAMES[month]} ${day}, ${year}`;
@@ -30,7 +33,7 @@ export default function EventModal({ day, month, year, events, onClose }) {
             <li key={event.id} className={styles.eventItem}>
               <div
                 className={styles.categoryDot}
-                style={{ backgroundColor: categoryColors[event.category] }}
+                style={{ backgroundColor: categoryColors[event.category] || '#ccc' }}
               />
               <div className={styles.eventInfo}>
                 <h4 className={styles.eventName}>{event.className}</h4>

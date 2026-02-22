@@ -1,0 +1,103 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dayColumn {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  min-width: 160px;
+}
+
+.dayTitle {
+  padding: 1rem;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2D2D2D;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.slots {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 200px;
+}
+
+.empty {
+  color: #999;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.slot {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 0.75rem;
+  border-left: 4px solid #ccc;
+  position: relative;
+}
+
+.slotTime {
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.slotName {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #2D2D2D;
+  margin-bottom: 0.125rem;
+}
+
+.slotInstructor {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.removeBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.removeBtn:hover {
+  color: #c62828;
+}

@@ -26,6 +26,11 @@ export default function Header() {
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
       <div className={`container ${styles.headerInner}`}>
         <Link to="/" className={styles.logo} onClick={closeMenu}>
+          <img
+            src="/logo.jpeg"
+            alt="Studio Neem logo"
+            style={{ height: '50px', marginRight: '10px', verticalAlign: 'middle' }}
+          />
           Studio Neem
         </Link>
 
