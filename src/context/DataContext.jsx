@@ -3,9 +3,8 @@ import {
   initialClasses,
   initialCategories,
   initialMemberships,
-  initialScheduleTemplate,
-  initialScheduleEndDate,
-  initialHolidayDates,
+  initialSchedule,
+  initialRegistrations,
 } from '../data/initialData';
 
 const DataContext = createContext(null);
@@ -15,8 +14,7 @@ const STORAGE_KEYS = {
   categories: 'studioneem_categories',
   memberships: 'studioneem_memberships',
   schedule: 'studioneem_schedule',
-  scheduleEndDate: 'studioneem_scheduleEndDate',
-  holidayDates: 'studioneem_holidayDates',
+  registrations: 'studioneem_registrations',
 };
 
 function loadFromStorage(key, fallback) {
@@ -49,14 +47,11 @@ export function DataProvider({ children }) {
   const [memberships, setMemberships] = useState(() =>
     loadFromStorage(STORAGE_KEYS.memberships, initialMemberships)
   );
-  const [scheduleTemplate, setScheduleTemplate] = useState(() =>
-    loadFromStorage(STORAGE_KEYS.schedule, initialScheduleTemplate)
+  const [schedule, setSchedule] = useState(() =>
+    loadFromStorage(STORAGE_KEYS.schedule, initialSchedule)
   );
-  const [scheduleEndDate, setScheduleEndDateState] = useState(() =>
-    loadFromStorage(STORAGE_KEYS.scheduleEndDate, initialScheduleEndDate)
-  );
-  const [holidayDates, setHolidayDatesState] = useState(() =>
-    loadFromStorage(STORAGE_KEYS.holidayDates, initialHolidayDates)
+  const [registrations, setRegistrations] = useState(() =>
+    loadFromStorage(STORAGE_KEYS.registrations, initialRegistrations)
   );
 
   // Auto-save to localStorage when data changes
@@ -73,16 +68,12 @@ export function DataProvider({ children }) {
   }, [memberships]);
 
   useEffect(() => {
-    saveToStorage(STORAGE_KEYS.schedule, scheduleTemplate);
-  }, [scheduleTemplate]);
+    saveToStorage(STORAGE_KEYS.schedule, schedule);
+  }, [schedule]);
 
   useEffect(() => {
-    saveToStorage(STORAGE_KEYS.scheduleEndDate, scheduleEndDate);
-  }, [scheduleEndDate]);
-
-  useEffect(() => {
-    saveToStorage(STORAGE_KEYS.holidayDates, holidayDates);
-  }, [holidayDates]);
+    saveToStorage(STORAGE_KEYS.registrations, registrations);
+  }, [registrations]);
 
   // Class CRUD operations
   const addClass = useCallback((classData) => {
@@ -100,10 +91,13 @@ export function DataProvider({ children }) {
   const deleteClass = useCallback((id) => {
     setClasses((prev) => prev.filter((c) => c.id !== id));
     // Also remove from schedule
-    setScheduleTemplate((prev) => {
+    setSchedule((prev) => {
       const updated = {};
-      for (const day of Object.keys(prev)) {
-        updated[day] = prev[day].filter((slot) => slot.classId !== id);
+      for (const dateKey of Object.keys(prev)) {
+        const filtered = prev[dateKey].filter((slot) => slot.classId !== id);
+        if (filtered.length > 0) {
+          updated[dateKey] = filtered;
+        }
       }
       return updated;
     });
@@ -147,122 +141,121 @@ export function DataProvider({ children }) {
     setMemberships((prev) => prev.filter((m) => m.id !== id));
   }, []);
 
-  // Schedule operations
-  const addScheduleSlot = useCallback((day, slot) => {
-    setScheduleTemplate((prev) => ({
+  // Schedule operations - date-based
+  const addClassToDate = useCallback((dateKey, slot) => {
+    setSchedule((prev) => ({
       ...prev,
-      [day]: [...(prev[day] || []), slot],
+      [dateKey]: [...(prev[dateKey] || []), slot],
     }));
   }, []);
 
-  const removeScheduleSlot = useCallback((day, index) => {
-    setScheduleTemplate((prev) => ({
-      ...prev,
-      [day]: prev[day].filter((_, i) => i !== index),
-    }));
-  }, []);
-
-  const updateScheduleSlot = useCallback((day, index, updates) => {
-    setScheduleTemplate((prev) => ({
-      ...prev,
-      [day]: prev[day].map((slot, i) =>
-        i === index ? { ...slot, ...updates } : slot
-      ),
-    }));
-  }, []);
-
-  // Schedule end date operations
-  const setScheduleEndDate = useCallback((date) => {
-    setScheduleEndDateState(date || null);
-  }, []);
-
-  // Holiday dates operations
-  const addHoliday = useCallback((holiday) => {
-    setHolidayDatesState((prev) => {
-      // Prevent duplicates
-      if (prev.some((h) => h.date === holiday.date)) {
-        return prev;
+  const removeClassFromDate = useCallback((dateKey, index) => {
+    setSchedule((prev) => {
+      const daySlots = prev[dateKey] || [];
+      const filtered = daySlots.filter((_, i) => i !== index);
+      if (filtered.length === 0) {
+        const { [dateKey]: _, ...rest } = prev;
+        return rest;
       }
-      return [...prev, holiday].sort((a, b) => a.date.localeCompare(b.date));
+      return {
+        ...prev,
+        [dateKey]: filtered,
+      };
     });
   }, []);
 
-  const removeHoliday = useCallback((date) => {
-    setHolidayDatesState((prev) => prev.filter((h) => h.date !== date));
-  }, []);
+  const copyWeekToNext = useCallback((weekStartDate) => {
+    // weekStartDate is a Date object representing the Sunday of the week to copy
+    const startDate = new Date(weekStartDate);
+    startDate.setHours(0, 0, 0, 0);
 
-  // Generate full schedule for a given month based on template
-  const generateScheduleForMonth = useCallback(
-    (year, month) => {
-      const events = {};
-      const daysInMonth = new Date(year, month, 0).getDate();
-      const dayNames = [
-        'sunday',
-        'monday',
-        'tuesday',
-        'wednesday',
-        'thursday',
-        'friday',
-        'saturday',
-      ];
+    // Get the 7 days of this week
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i);
+      weekDates.push(d);
+    }
 
-      // Create a Set of holiday dates for fast lookup
-      const holidaySet = new Set(holidayDates.map((h) => h.date));
+    // Get corresponding dates in next week
+    const nextWeekDates = weekDates.map((d) => {
+      const next = new Date(d);
+      next.setDate(d.getDate() + 7);
+      return next;
+    });
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month - 1, day);
-        const dow = date.getDay();
-        const dayName = dayNames[dow];
-        const key = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    setSchedule((prev) => {
+      const updated = { ...prev };
 
-        // Skip if date is after schedule end date
-        if (scheduleEndDate && key > scheduleEndDate) {
-          continue;
-        }
+      for (let i = 0; i < 7; i++) {
+        const sourceKey = formatDateKey(weekDates[i]);
+        const targetKey = formatDateKey(nextWeekDates[i]);
 
-        // Skip if date is a holiday
-        if (holidaySet.has(key)) {
-          continue;
-        }
-
-        const daySlots = scheduleTemplate[dayName] || [];
-
-        if (daySlots.length > 0) {
-          events[key] = daySlots.map((slot, idx) => {
-            const classData = classes.find((c) => c.id === slot.classId);
-            if (!classData) return null;
-            return {
-              id: `${key}-${idx + 1}`,
-              className: classData.name,
-              time: slot.time,
-              instructor: classData.instructor,
-              level: classData.level,
-              duration: classData.duration,
-              category: classData.category,
-            };
-          }).filter(Boolean);
+        if (prev[sourceKey] && prev[sourceKey].length > 0) {
+          // Copy slots from source to target
+          updated[targetKey] = [...prev[sourceKey]];
         }
       }
 
-      return events;
-    },
-    [scheduleTemplate, classes, scheduleEndDate, holidayDates]
-  );
+      return updated;
+    });
+  }, []);
 
-  // Generate schedule for multiple months
+  // Helper to format date as YYYY-MM-DD
+  const formatDateKey = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Registration operations
+  const addRegistration = useCallback((data) => {
+    const newId = Math.max(0, ...registrations.map((r) => r.id)) + 1;
+    const registration = {
+      ...data,
+      id: newId,
+      createdAt: new Date().toISOString(),
+    };
+    setRegistrations((prev) => [...prev, registration]);
+    return newId;
+  }, [registrations]);
+
+  const getRegistrationsForClass = useCallback((classId, date, time) => {
+    return registrations.filter(
+      (r) => r.classId === classId && r.scheduleDate === date && r.scheduleTime === time
+    );
+  }, [registrations]);
+
+  const deleteRegistration = useCallback((id) => {
+    setRegistrations((prev) => prev.filter((r) => r.id !== id));
+  }, []);
+
+  // Get schedule with class details populated
   const getSchedule = useCallback(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
+    const result = {};
 
-    let schedule = {};
-    for (let i = 0; i < 6; i++) {
-      const m = ((month - 1 + i) % 12) + 1;
-      const y = year + Math.floor((month - 1 + i) / 12);
-      schedule = { ...schedule, ...generateScheduleForMonth(y, m) };
+    for (const dateKey of Object.keys(schedule)) {
+      const daySlots = schedule[dateKey];
+      if (daySlots && daySlots.length > 0) {
+        result[dateKey] = daySlots.map((slot, idx) => {
+          const classData = classes.find((c) => c.id === slot.classId);
+          if (!classData) return null;
+          return {
+            id: `${dateKey}-${idx + 1}`,
+            className: classData.name,
+            time: slot.time,
+            instructor: classData.instructor,
+            level: classData.level,
+            duration: classData.duration,
+            category: classData.category,
+          };
+        }).filter(Boolean);
+      }
     }
-    return schedule;
-  }, [generateScheduleForMonth]);
+
+    return result;
+  }, [schedule, classes]);
 
   // Helper to get category colors/labels maps for compatibility
   const getCategoryColors = useCallback(() => {
@@ -286,9 +279,8 @@ export function DataProvider({ children }) {
     setClasses(initialClasses);
     setCategories(initialCategories);
     setMemberships(initialMemberships);
-    setScheduleTemplate(initialScheduleTemplate);
-    setScheduleEndDateState(initialScheduleEndDate);
-    setHolidayDatesState(initialHolidayDates);
+    setSchedule(initialSchedule);
+    setRegistrations(initialRegistrations);
   }, []);
 
   const value = {
@@ -296,9 +288,8 @@ export function DataProvider({ children }) {
     classes,
     categories,
     memberships,
-    scheduleTemplate,
-    scheduleEndDate,
-    holidayDates,
+    schedule,
+    registrations,
 
     // Class operations
     addClass,
@@ -317,15 +308,15 @@ export function DataProvider({ children }) {
     deleteMembership,
 
     // Schedule operations
-    addScheduleSlot,
-    removeScheduleSlot,
-    updateScheduleSlot,
+    addClassToDate,
+    removeClassFromDate,
+    copyWeekToNext,
     getSchedule,
 
-    // Schedule settings operations
-    setScheduleEndDate,
-    addHoliday,
-    removeHoliday,
+    // Registration operations
+    addRegistration,
+    getRegistrationsForClass,
+    deleteRegistration,
 
     // Helpers
     getCategoryColors,

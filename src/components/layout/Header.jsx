@@ -4,10 +4,8 @@ import styles from './Header.module.css';
 
 const navItems = [
   { path: '/', label: 'Home' },
-  { path: '/studio', label: 'Studio' },
+  { path: '/gallery', label: 'Gallery' },
   { path: '/classes', label: 'Classes' },
-  { path: '/sign-up', label: 'Sign Up' },
-  { path: '/calendar', label: 'Calendar' },
 ];
 
 export default function Header() {

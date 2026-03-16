@@ -16,8 +16,10 @@ export default function ClassForm({ classData, onSubmit, onCancel }) {
     duration: '60 min',
     category: categories[0]?.key || '',
     description: '',
-    featured: false,
+    galleryImages: [],
   });
+
+  const [newImageUrl, setNewImageUrl] = useState('');
 
   useEffect(() => {
     if (classData) {
@@ -28,7 +30,7 @@ export default function ClassForm({ classData, onSubmit, onCancel }) {
         duration: classData.duration || '60 min',
         category: classData.category || categories[0]?.key || '',
         description: classData.description || '',
-        featured: classData.featured || false,
+        galleryImages: classData.galleryImages || [],
       });
     }
   }, [classData, categories]);
@@ -38,6 +40,23 @@ export default function ClassForm({ classData, onSubmit, onCancel }) {
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleAddImage = () => {
+    if (newImageUrl.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        galleryImages: [...prev.galleryImages, newImageUrl.trim()],
+      }));
+      setNewImageUrl('');
+    }
+  };
+
+  const handleRemoveImage = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      galleryImages: prev.galleryImages.filter((_, i) => i !== index),
     }));
   };
 
@@ -134,15 +153,39 @@ export default function ClassForm({ classData, onSubmit, onCancel }) {
       </div>
 
       <div className={styles.field}>
-        <label className={styles.checkbox}>
+        <label className={styles.label}>Gallery Images</label>
+        <div className={styles.imageInputRow}>
           <input
-            type="checkbox"
-            name="featured"
-            checked={formData.featured}
-            onChange={handleChange}
+            type="url"
+            value={newImageUrl}
+            onChange={(e) => setNewImageUrl(e.target.value)}
+            className={styles.input}
+            placeholder="Enter image URL"
           />
-          <span>Show on homepage (Featured)</span>
-        </label>
+          <button
+            type="button"
+            onClick={handleAddImage}
+            className={styles.addImageBtn}
+          >
+            Add
+          </button>
+        </div>
+        {formData.galleryImages.length > 0 && (
+          <ul className={styles.imageList}>
+            {formData.galleryImages.map((url, index) => (
+              <li key={index} className={styles.imageListItem}>
+                <span className={styles.imageUrl}>{url}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(index)}
+                  className={styles.removeImageBtn}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className={styles.actions}>

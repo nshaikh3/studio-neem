@@ -6,7 +6,7 @@ import ClassForm from '../../components/admin/forms/ClassForm';
 import styles from '../../components/admin/AdminLayout.module.css';
 
 export default function AdminClasses() {
-  const { classes, categories, addClass, updateClass, deleteClass, toggleFeatured } = useData();
+  const { classes, categories, addClass, updateClass, deleteClass } = useData();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
 
@@ -75,16 +75,12 @@ export default function AdminClasses() {
       ),
     },
     {
-      key: 'featured',
-      label: 'Featured',
-      render: (value, row) => (
-        <button
-          onClick={() => toggleFeatured(row.id)}
-          className={`${styles.btn} ${styles.btnSmall} ${value ? styles.btnPrimary : styles.btnSecondary}`}
-          style={{ minWidth: 60 }}
-        >
-          {value ? 'Yes' : 'No'}
-        </button>
+      key: 'galleryImages',
+      label: 'Gallery',
+      render: (value) => (
+        <span style={{ color: value?.length ? '#7E7F41' : '#999' }}>
+          {value?.length || 0} images
+        </span>
       ),
     },
   ];

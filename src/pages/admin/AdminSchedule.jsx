@@ -2,80 +2,131 @@ import { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import Modal from '../../components/admin/shared/Modal';
 import ScheduleEventForm from '../../components/admin/forms/ScheduleEventForm';
-import HolidayForm from '../../components/admin/forms/HolidayForm';
 import styles from '../../components/admin/AdminLayout.module.css';
 import scheduleStyles from './AdminSchedule.module.css';
 
-const DAYS = [
-  { key: 'sunday', label: 'Sunday' },
-  { key: 'monday', label: 'Monday' },
-  { key: 'tuesday', label: 'Tuesday' },
-  { key: 'wednesday', label: 'Wednesday' },
-  { key: 'thursday', label: 'Thursday' },
-  { key: 'friday', label: 'Friday' },
-  { key: 'saturday', label: 'Saturday' },
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
 ];
+
+function getCalendarDays(year, month) {
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+  const days = [];
+
+  // Previous month's trailing days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    days.push({ day: daysInPrevMonth - i, isOtherMonth: true });
+  }
+
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    days.push({ day: d, isOtherMonth: false });
+  }
+
+  // Next month's leading days (fill to complete last row)
+  const totalCells = Math.ceil(days.length / 7) * 7;
+  const remaining = totalCells - days.length;
+  for (let d = 1; d <= remaining; d++) {
+    days.push({ day: d, isOtherMonth: true });
+  }
+
+  return days;
+}
+
+function formatDateKey(year, month, day) {
+  const m = String(month + 1).padStart(2, '0');
+  const d = String(day).padStart(2, '0');
+  return `${year}-${m}-${d}`;
+}
+
+function getWeekStartDate(year, month, day) {
+  const date = new Date(year, month, day);
+  const dayOfWeek = date.getDay();
+  const sunday = new Date(date);
+  sunday.setDate(date.getDate() - dayOfWeek);
+  return sunday;
+}
 
 export default function AdminSchedule() {
   const {
-    scheduleTemplate,
+    schedule,
     classes,
     categories,
-    addScheduleSlot,
-    removeScheduleSlot,
-    scheduleEndDate,
-    setScheduleEndDate,
-    holidayDates,
-    addHoliday,
-    removeHoliday,
+    addClassToDate,
+    removeClassFromDate,
+    copyWeekToNext,
   } = useData();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [holidayModalOpen, setHolidayModalOpen] = useState(false);
 
-  const handleAdd = () => {
-    setModalOpen(true);
+  const now = new Date();
+  const [viewYear, setViewYear] = useState(now.getFullYear());
+  const [viewMonth, setViewMonth] = useState(now.getMonth());
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+
+  const calendarDays = getCalendarDays(viewYear, viewMonth);
+
+  const handlePrevMonth = () => {
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear(viewYear - 1);
+    } else {
+      setViewMonth(viewMonth - 1);
+    }
   };
 
-  const handleSubmit = (formData) => {
-    addScheduleSlot(formData.day, {
+  const handleNextMonth = () => {
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear(viewYear + 1);
+    } else {
+      setViewMonth(viewMonth + 1);
+    }
+  };
+
+  const handleDayClick = (day) => {
+    const dateKey = formatDateKey(viewYear, viewMonth, day);
+    setSelectedDate(dateKey);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedDate(null);
+  };
+
+  const handleAddClick = () => {
+    setAddModalOpen(true);
+  };
+
+  const handleAddSubmit = (formData) => {
+    addClassToDate(selectedDate, {
       classId: formData.classId,
       time: formData.time,
     });
-    setModalOpen(false);
+    setAddModalOpen(false);
   };
 
-  const handleRemove = (day, index) => {
-    if (window.confirm('Remove this class slot?')) {
-      removeScheduleSlot(day, index);
+  const handleRemove = (index) => {
+    if (window.confirm('Remove this class?')) {
+      removeClassFromDate(selectedDate, index);
     }
   };
 
-  const handleAddHoliday = (holiday) => {
-    addHoliday(holiday);
-    setHolidayModalOpen(false);
-  };
+  const handleCopyWeek = () => {
+    if (!selectedDate) return;
+    const [year, month, day] = selectedDate.split('-').map(Number);
+    const weekStart = getWeekStartDate(year, month - 1, day);
 
-  const handleRemoveHoliday = (date) => {
-    if (window.confirm('Remove this holiday?')) {
-      removeHoliday(date);
+    const nextWeekEnd = new Date(weekStart);
+    nextWeekEnd.setDate(weekStart.getDate() + 13);
+    const endStr = nextWeekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    if (window.confirm(`Copy this week's schedule to next week (ending ${endStr})?`)) {
+      copyWeekToNext(weekStart);
     }
-  };
-
-  const handleEndDateChange = (e) => {
-    setScheduleEndDate(e.target.value || null);
-  };
-
-  const handleClearEndDate = () => {
-    setScheduleEndDate(null);
-  };
-
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
   };
 
   const getClassById = (id) => classes.find((c) => c.id === id);
@@ -85,7 +136,6 @@ export default function AdminSchedule() {
     return cat ? cat.color : '#ccc';
   };
 
-  // Sort slots by time
   const sortByTime = (slots) => {
     return [...slots].sort((a, b) => {
       const timeA = a.time.toLowerCase();
@@ -101,161 +151,156 @@ export default function AdminSchedule() {
     });
   };
 
+  const getDateLabel = (dateKey) => {
+    const date = new Date(dateKey + 'T00:00:00');
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const selectedDaySlots = selectedDate ? (schedule[selectedDate] || []) : [];
+  const sortedSlots = sortByTime(selectedDaySlots);
+
   return (
     <div>
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Weekly Schedule</h1>
+        <h1 className={styles.pageTitle}>Schedule</h1>
         <p className={styles.pageSubtitle}>
-          Configure the recurring weekly class template
+          Click a date to add or remove classes
         </p>
-        <div className={styles.headerActions}>
-          <button onClick={handleAdd} className={`${styles.btn} ${styles.btnPrimary}`}>
-            + Add Class Slot
+      </div>
+
+      <div className={scheduleStyles.calendarCard}>
+        <div className={scheduleStyles.calendarHeader}>
+          <button
+            onClick={handlePrevMonth}
+            className={scheduleStyles.navBtn}
+            aria-label="Previous month"
+          >
+            &larr;
+          </button>
+          <h2 className={scheduleStyles.monthTitle}>
+            {MONTH_NAMES[viewMonth]} {viewYear}
+          </h2>
+          <button
+            onClick={handleNextMonth}
+            className={scheduleStyles.navBtn}
+            aria-label="Next month"
+          >
+            &rarr;
           </button>
         </div>
-      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>Schedule Settings</h2>
-          </div>
-          <div className={styles.cardBody}>
-            <div style={{ marginBottom: '0.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#2D2D2D', marginBottom: '0.375rem' }}>
-                End Date
-              </label>
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <input
-                  type="date"
-                  value={scheduleEndDate || ''}
-                  onChange={handleEndDateChange}
-                  style={{
-                    flex: 1,
-                    padding: '0.625rem 0.875rem',
-                    border: '2px solid #e0e0e0',
-                    borderRadius: '8px',
-                    fontSize: '0.95rem',
-                  }}
-                />
-                {scheduleEndDate && (
-                  <button
-                    onClick={handleClearEndDate}
-                    className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSmall}`}
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
+        <div className={scheduleStyles.calendarGrid}>
+          {DAY_LABELS.map((label) => (
+            <div key={label} className={scheduleStyles.dayLabel}>
+              {label}
             </div>
-            <p style={{ color: '#666', fontSize: '0.85rem', margin: 0 }}>
-              Schedule repeats until this date. Leave empty for no end date.
-            </p>
-          </div>
+          ))}
+          {calendarDays.map((cell, i) => {
+            const dateKey = cell.isOtherMonth ? null : formatDateKey(viewYear, viewMonth, cell.day);
+            const daySlots = dateKey ? (schedule[dateKey] || []) : [];
+            const classCount = daySlots.length;
+            const isToday = !cell.isOtherMonth &&
+              viewYear === now.getFullYear() &&
+              viewMonth === now.getMonth() &&
+              cell.day === now.getDate();
+
+            return (
+              <button
+                key={i}
+                className={`${scheduleStyles.dayCell} ${cell.isOtherMonth ? scheduleStyles.otherMonth : ''} ${isToday ? scheduleStyles.today : ''}`}
+                onClick={() => !cell.isOtherMonth && handleDayClick(cell.day)}
+                disabled={cell.isOtherMonth}
+              >
+                <span className={scheduleStyles.dayNumber}>{cell.day}</span>
+                {classCount > 0 && (
+                  <span className={scheduleStyles.classCount}>{classCount}</span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>Holiday Dates (Studio Closed)</h2>
-          </div>
-          <div className={styles.cardBody}>
-            {holidayDates.length === 0 ? (
-              <p style={{ color: '#666', fontSize: '0.9rem', margin: '0 0 1rem' }}>
-                No holidays added yet.
-              </p>
-            ) : (
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem' }}>
-                {holidayDates.map((holiday) => (
-                  <li
-                    key={holiday.date}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '0.5rem 0',
-                      borderBottom: '1px solid #eee',
-                    }}
-                  >
-                    <span>
-                      <strong>{formatDate(holiday.date)}</strong> - {holiday.reason}
-                    </span>
-                    <button
-                      onClick={() => handleRemoveHoliday(holiday.date)}
-                      className={styles.btnIcon}
-                      aria-label="Remove holiday"
-                    >
-                      ✕
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+        <div className={scheduleStyles.legend}>
+          {categories.map((cat) => (
+            <div key={cat.key} className={scheduleStyles.legendItem}>
+              <span
+                className={scheduleStyles.legendDot}
+                style={{ backgroundColor: cat.color }}
+              />
+              <span className={scheduleStyles.legendLabel}>{cat.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Modal
+        isOpen={selectedDate !== null}
+        onClose={handleCloseModal}
+        title={selectedDate ? getDateLabel(selectedDate) : ''}
+      >
+        <div className={scheduleStyles.dayModal}>
+          <div className={scheduleStyles.dayModalHeader}>
             <button
-              onClick={() => setHolidayModalOpen(true)}
+              onClick={handleAddClick}
+              className={`${styles.btn} ${styles.btnPrimary}`}
+            >
+              + Add Class
+            </button>
+            <button
+              onClick={handleCopyWeek}
               className={`${styles.btn} ${styles.btnSecondary}`}
             >
-              + Add Holiday
+              Copy Week &rarr;
             </button>
           </div>
-        </div>
-      </div>
 
-      <div className={scheduleStyles.grid}>
-        {DAYS.map((day) => {
-          const slots = scheduleTemplate[day.key] || [];
-          const sortedSlots = sortByTime(slots);
+          {sortedSlots.length === 0 ? (
+            <p className={scheduleStyles.emptyDay}>No classes scheduled for this day.</p>
+          ) : (
+            <div className={scheduleStyles.slotList}>
+              {sortedSlots.map((slot, idx) => {
+                const cls = getClassById(slot.classId);
+                if (!cls) return null;
+                const originalIndex = selectedDaySlots.indexOf(slot);
 
-          return (
-            <div key={day.key} className={scheduleStyles.dayColumn}>
-              <h3 className={scheduleStyles.dayTitle}>{day.label}</h3>
-              <div className={scheduleStyles.slots}>
-                {sortedSlots.length === 0 ? (
-                  <p className={scheduleStyles.empty}>No classes</p>
-                ) : (
-                  sortedSlots.map((slot, idx) => {
-                    const cls = getClassById(slot.classId);
-                    if (!cls) return null;
-                    const originalIndex = slots.indexOf(slot);
-
-                    return (
-                      <div
-                        key={idx}
-                        className={scheduleStyles.slot}
-                        style={{ borderLeftColor: getCategoryColor(cls.category) }}
-                      >
-                        <div className={scheduleStyles.slotTime}>{slot.time}</div>
-                        <div className={scheduleStyles.slotName}>{cls.name}</div>
-                        <div className={scheduleStyles.slotInstructor}>
-                          {cls.instructor}
-                        </div>
-                        <button
-                          onClick={() => handleRemove(day.key, originalIndex)}
-                          className={scheduleStyles.removeBtn}
-                          aria-label="Remove slot"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
+                return (
+                  <div
+                    key={idx}
+                    className={scheduleStyles.slotItem}
+                    style={{ borderLeftColor: getCategoryColor(cls.category) }}
+                  >
+                    <div className={scheduleStyles.slotTime}>{slot.time}</div>
+                    <div className={scheduleStyles.slotDetails}>
+                      <div className={scheduleStyles.slotName}>{cls.name}</div>
+                      <div className={scheduleStyles.slotInstructor}>{cls.instructor}</div>
+                    </div>
+                    <button
+                      onClick={() => handleRemove(originalIndex)}
+                      className={scheduleStyles.removeBtn}
+                      aria-label="Remove class"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
-
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Class Slot">
-        <ScheduleEventForm
-          onSubmit={handleSubmit}
-          onCancel={() => setModalOpen(false)}
-        />
+          )}
+        </div>
       </Modal>
 
-      <Modal isOpen={holidayModalOpen} onClose={() => setHolidayModalOpen(false)} title="Add Holiday">
-        <HolidayForm
-          onSubmit={handleAddHoliday}
-          onCancel={() => setHolidayModalOpen(false)}
+      <Modal
+        isOpen={addModalOpen}
+        onClose={() => setAddModalOpen(false)}
+        title="Add Class"
+      >
+        <ScheduleEventForm
+          onSubmit={handleAddSubmit}
+          onCancel={() => setAddModalOpen(false)}
         />
       </Modal>
     </div>

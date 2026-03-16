@@ -1,25 +1,21 @@
 import Hero from '../components/shared/Hero';
 import SectionHeading from '../components/shared/SectionHeading';
-import ClassCard from '../components/shared/ClassCard';
+import ContactSection from '../components/shared/ContactSection';
 import Button from '../components/shared/Button';
-import { useData } from '../context/DataContext';
 import styles from './HomePage.module.css';
 
 export default function HomePage() {
-  const { classes } = useData();
-  const featured = classes.filter(c => c.featured);
-
   return (
     <>
       <Hero
         title="Studio Neem"
         subtitle="A sacred space for women to find strength, balance, and peace through the ancient practice of yoga."
-        size="full"
+        size="medium"
         gradient="olive"
       >
-        <Button to="/classes" variant="light">Explore Classes</Button>
-        <Button to="/sign-up" variant="secondary">
-          <span style={{ color: 'var(--cream)' }}>Join Us</span>
+        <Button to="/classes" variant="light">View Classes</Button>
+        <Button to="/gallery" variant="secondary">
+          <span style={{ color: 'var(--cream)' }}>Gallery</span>
         </Button>
       </Hero>
 
@@ -46,25 +42,7 @@ export default function HomePage() {
                 our studio is rooted in the belief that every woman deserves a dedicated space
                 for wellness and self-discovery.
               </p>
-              <Button to="/studio" variant="secondary">Learn More</Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.featuredClasses}>
-        <div className="container">
-          <SectionHeading
-            title="Featured Classes"
-            subtitle="From gentle flows to powerful practices, find the class that speaks to you."
-          />
-          <div className={styles.classGrid}>
-            {featured.map(cls => (
-              <ClassCard key={cls.id} classData={cls} />
-            ))}
-          </div>
-          <div className={styles.classesAction}>
-            <Button to="/classes">View All Classes</Button>
           </div>
         </div>
       </section>
@@ -76,13 +54,12 @@ export default function HomePage() {
             Join our community of women dedicated to wellness, growth, and connection.
           </p>
           <div className={styles.ctaActions}>
-            <Button to="/sign-up" variant="light">View Membership Options</Button>
-            <Button to="/calendar" variant="secondary">
-              <span style={{ color: 'var(--cream)' }}>See Schedule</span>
-            </Button>
+            <Button to="/classes" variant="light">View Schedule & Register</Button>
           </div>
         </div>
       </section>
+
+      <ContactSection />
     </>
   );
 }

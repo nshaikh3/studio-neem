@@ -10,6 +10,7 @@ export const initialClasses = [
     instructor: 'Priya Sharma',
     description: 'Start your morning with a gentle, energizing flow. Sun salutations and standing poses build warmth while mindful breathwork centers your mind for the day ahead.',
     featured: true,
+    galleryImages: [],
   },
   {
     id: 2,
@@ -20,6 +21,7 @@ export const initialClasses = [
     instructor: 'Aisha Johnson',
     description: 'An athletic, fast-paced practice linking breath to movement. Expect challenging sequences, arm balances, and inversions that build strength and stamina.',
     featured: false,
+    galleryImages: [],
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ export const initialClasses = [
     instructor: 'Elena Vasquez',
     description: 'Deeply relaxing, prop-supported poses held for extended periods. This practice activates the parasympathetic nervous system, promoting healing and stress relief.',
     featured: true,
+    galleryImages: [],
   },
   {
     id: 4,
@@ -40,6 +43,7 @@ export const initialClasses = [
     instructor: 'Priya Sharma',
     description: 'A safe, nurturing practice designed for expecting mothers at every stage. Modified poses support your changing body while building strength for birth.',
     featured: false,
+    galleryImages: [],
   },
   {
     id: 5,
@@ -50,6 +54,7 @@ export const initialClasses = [
     instructor: 'Elena Vasquez',
     description: 'Long-held passive stretches targeting deep connective tissue and fascia. Each pose is held for 3-5 minutes, creating space for profound release and flexibility.',
     featured: false,
+    galleryImages: [],
   },
   {
     id: 6,
@@ -60,6 +65,7 @@ export const initialClasses = [
     instructor: 'Aisha Johnson',
     description: 'An introduction to the traditional Ashtanga primary series. Learn the foundational postures, breathing technique, and flowing transitions of this dynamic practice.',
     featured: false,
+    galleryImages: [],
   },
   {
     id: 7,
@@ -70,6 +76,7 @@ export const initialClasses = [
     instructor: 'Mei Lin Chen',
     description: 'Yoga meets strength training. Flowing yoga sequences are combined with light weights and cardio bursts for a full-body workout that tones and energizes.',
     featured: false,
+    galleryImages: [],
   },
   {
     id: 8,
@@ -80,8 +87,13 @@ export const initialClasses = [
     instructor: 'Mei Lin Chen',
     description: 'Guided pranayama techniques and seated meditation cultivate inner calm and mental clarity. No yoga experience required — just an open mind.',
     featured: true,
+    galleryImages: [],
   },
 ];
+
+// Registrations for classes
+// Shape: { id, classId, scheduleDate, scheduleTime, name, phone, email, createdAt }
+export const initialRegistrations = [];
 
 export const initialCategories = [
   { key: 'flow', label: 'Flow', color: '#7E7F41' },
@@ -134,47 +146,6 @@ export const initialMemberships = [
   },
 ];
 
-// Schedule end date - null for no end (continues indefinitely)
-export const initialScheduleEndDate = null;
-
-// Holiday dates when studio is closed
-export const initialHolidayDates = [];
-
-// Weekly schedule template - day of week mapped to class slots
-export const initialScheduleTemplate = {
-  sunday: [
-    { classId: 8, time: '9:00 AM' },
-  ],
-  monday: [
-    { classId: 1, time: '7:00 AM' },
-    { classId: 2, time: '10:00 AM' },
-    { classId: 3, time: '5:30 PM' },
-  ],
-  tuesday: [
-    { classId: 5, time: '7:00 AM' },
-    { classId: 6, time: '10:00 AM' },
-    { classId: 7, time: '4:00 PM' },
-    { classId: 8, time: '6:30 PM' },
-  ],
-  wednesday: [
-    { classId: 1, time: '7:00 AM' },
-    { classId: 2, time: '10:00 AM' },
-    { classId: 3, time: '5:30 PM' },
-  ],
-  thursday: [
-    { classId: 5, time: '7:00 AM' },
-    { classId: 6, time: '10:00 AM' },
-    { classId: 7, time: '4:00 PM' },
-    { classId: 8, time: '6:30 PM' },
-  ],
-  friday: [
-    { classId: 1, time: '7:00 AM' },
-    { classId: 2, time: '10:00 AM' },
-    { classId: 3, time: '5:30 PM' },
-  ],
-  saturday: [
-    { classId: 1, time: '8:00 AM' },
-    { classId: 4, time: '10:30 AM' },
-    { classId: 7, time: '1:00 PM' },
-  ],
-};
+// Schedule - date keys mapped to class slots
+// Shape: { '2026-03-16': [{ classId: 1, time: '7:00 AM' }], ... }
+export const initialSchedule = {};

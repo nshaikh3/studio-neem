@@ -19,10 +19,8 @@ export default function Footer() {
             <h4>Quick Links</h4>
             <ul>
               <li><Link to="/">Home</Link></li>
-              <li><Link to="/studio">Our Studio</Link></li>
+              <li><Link to="/gallery">Gallery</Link></li>
               <li><Link to="/classes">Classes</Link></li>
-              <li><Link to="/sign-up">Membership</Link></li>
-              <li><Link to="/calendar">Calendar</Link></li>
             </ul>
           </nav>
 

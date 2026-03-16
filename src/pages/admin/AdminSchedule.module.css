@@ -1,103 +1,220 @@
-.grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1rem;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-}
-
-@media (max-width: 1200px) {
-  .grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.dayColumn {
+.calendarCard {
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  min-width: 160px;
+  padding: 1.5rem;
 }
 
-.dayTitle {
-  padding: 1rem;
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.monthTitle {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #2D2D2D;
-  border-bottom: 1px solid #eee;
-  text-align: center;
 }
 
-.slots {
-  padding: 0.75rem;
+.navBtn {
+  background: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #666;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.navBtn:hover {
+  background: #e0e0e0;
+  color: #2D2D2D;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.dayLabel {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  padding: 0.5rem 0;
+  text-transform: uppercase;
+}
+
+.dayCell {
+  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  min-height: 200px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #f8f8f8;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  position: relative;
+  min-height: 60px;
 }
 
-.empty {
-  color: #999;
-  font-size: 0.85rem;
+.dayCell:hover:not(:disabled) {
+  background: #e8f5e9;
+  border-color: #7E7F41;
+}
+
+.dayCell:disabled {
+  cursor: default;
+}
+
+.otherMonth {
+  background: transparent;
+}
+
+.otherMonth .dayNumber {
+  color: #ccc;
+}
+
+.today {
+  background: #e8f5e9;
+}
+
+.today .dayNumber {
+  font-weight: 700;
+  color: #7E7F41;
+}
+
+.dayNumber {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2D2D2D;
+}
+
+.classCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  background: #7E7F41;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0 6px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legendLabel {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Day modal styles */
+.dayModal {
+  min-width: 400px;
+}
+
+@media (max-width: 480px) {
+  .dayModal {
+    min-width: auto;
+  }
+}
+
+.dayModalHeader {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.emptyDay {
+  color: #888;
+  font-size: 0.95rem;
   text-align: center;
-  padding: 1rem 0;
+  padding: 2rem 0;
   margin: 0;
 }
 
-.slot {
+.slotList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.slotItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
   background: #f8f8f8;
   border-radius: 8px;
-  padding: 0.75rem;
   border-left: 4px solid #ccc;
-  position: relative;
 }
 
 .slotTime {
-  font-size: 0.75rem;
-  color: #666;
+  font-size: 0.85rem;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  color: #666;
+  min-width: 70px;
+}
+
+.slotDetails {
+  flex: 1;
 }
 
 .slotName {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #2D2D2D;
   margin-bottom: 0.125rem;
 }
 
 .slotInstructor {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #888;
 }
 
 .removeBtn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
   background: none;
   border: none;
   color: #ccc;
   cursor: pointer;
-  font-size: 0.75rem;
-  padding: 0.25rem;
+  font-size: 1.25rem;
+  padding: 0.25rem 0.5rem;
   line-height: 1;
   transition: color 0.2s;
+  border-radius: 4px;
 }
 
 .removeBtn:hover {
   color: #c62828;
+  background: rgba(198, 40, 40, 0.1);
 }

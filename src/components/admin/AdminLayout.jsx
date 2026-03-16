@@ -7,7 +7,7 @@ const navItems = [
   { path: '/admin/classes', label: 'Classes', icon: '🧘' },
   { path: '/admin/schedule', label: 'Schedule', icon: '📅' },
   { path: '/admin/categories', label: 'Categories', icon: '🏷️' },
-  { path: '/admin/memberships', label: 'Memberships', icon: '💳' },
+  { path: '/admin/registrations', label: 'Registrations', icon: '📝' },
 ];
 
 export default function AdminLayout() {

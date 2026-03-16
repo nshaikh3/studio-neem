@@ -4,7 +4,7 @@ import Modal from '../../components/admin/shared/Modal';
 import styles from '../../components/admin/AdminLayout.module.css';
 
 export default function AdminDashboard() {
-  const { classes, categories, memberships, scheduleTemplate, scheduleEndDate, holidayDates, resetAllData } = useData();
+  const { classes, categories, schedule, registrations, resetAllData } = useData();
   const fileInputRef = useRef(null);
   const [showCodeModal, setShowCodeModal] = useState(false);
 
@@ -13,18 +13,17 @@ export default function AdminDashboard() {
 
 export const initialClasses = ${JSON.stringify(classes, null, 2)};
 
+// Registrations for classes
+// Shape: { id, classId, scheduleDate, scheduleTime, name, phone, email, createdAt }
+export const initialRegistrations = [];
+
 export const initialCategories = ${JSON.stringify(categories, null, 2)};
 
-export const initialMemberships = ${JSON.stringify(memberships, null, 2)};
+export const initialMemberships = [];
 
-// Schedule end date - null for no end (continues indefinitely)
-export const initialScheduleEndDate = ${JSON.stringify(scheduleEndDate)};
-
-// Holiday dates when studio is closed
-export const initialHolidayDates = ${JSON.stringify(holidayDates, null, 2)};
-
-// Weekly schedule template - day of week mapped to class slots
-export const initialScheduleTemplate = ${JSON.stringify(scheduleTemplate, null, 2)};
+// Schedule - date keys mapped to class slots
+// Shape: { '2026-03-16': [{ classId: 1, time: '7:00 AM' }], ... }
+export const initialSchedule = ${JSON.stringify(schedule, null, 2)};
 `;
   };
 
@@ -37,10 +36,8 @@ export const initialScheduleTemplate = ${JSON.stringify(scheduleTemplate, null, 
     const data = {
       classes,
       categories,
-      memberships,
-      scheduleTemplate,
-      scheduleEndDate,
-      holidayDates,
+      schedule,
+      registrations,
       exportedAt: new Date().toISOString(),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -60,16 +57,11 @@ export const initialScheduleTemplate = ${JSON.stringify(scheduleTemplate, null, 
     reader.onload = (event) => {
       try {
         const data = JSON.parse(event.target.result);
-        if (data.classes && data.categories && data.memberships && data.scheduleTemplate) {
-          // Save directly to localStorage
+        if (data.classes && data.schedule) {
           localStorage.setItem('studioneem_classes', JSON.stringify(data.classes));
-          localStorage.setItem('studioneem_categories', JSON.stringify(data.categories));
-          localStorage.setItem('studioneem_memberships', JSON.stringify(data.memberships));
-          localStorage.setItem('studioneem_schedule', JSON.stringify(data.scheduleTemplate));
-          // Handle new fields (with defaults for backwards compatibility)
-          localStorage.setItem('studioneem_scheduleEndDate', JSON.stringify(data.scheduleEndDate ?? null));
-          localStorage.setItem('studioneem_holidayDates', JSON.stringify(data.holidayDates ?? []));
-          // Reload to pick up changes
+          localStorage.setItem('studioneem_categories', JSON.stringify(data.categories || []));
+          localStorage.setItem('studioneem_schedule', JSON.stringify(data.schedule));
+          localStorage.setItem('studioneem_registrations', JSON.stringify(data.registrations ?? []));
           window.location.reload();
         } else {
           alert('Invalid data file. Missing required fields.');
@@ -79,7 +71,7 @@ export const initialScheduleTemplate = ${JSON.stringify(scheduleTemplate, null, 
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // Reset input
+    e.target.value = '';
   };
 
   const handleReset = () => {
@@ -89,9 +81,15 @@ export const initialScheduleTemplate = ${JSON.stringify(scheduleTemplate, null, 
     }
   };
 
-  const featuredCount = classes.filter((c) => c.featured).length;
-  const totalSlots = Object.values(scheduleTemplate).reduce(
+  const totalScheduledClasses = Object.values(schedule).reduce(
     (acc, slots) => acc + slots.length,
+    0
+  );
+
+  const scheduledDays = Object.keys(schedule).length;
+
+  const galleryImageCount = classes.reduce(
+    (acc, cls) => acc + (cls.galleryImages?.length || 0),
     0
   );
 
@@ -108,20 +106,16 @@ export const initialScheduleTemplate = ${JSON.stringify(scheduleTemplate, null, 
           <p className={styles.statValue}>{classes.length}</p>
         </div>
         <div className={styles.statCard}>
-          <p className={styles.statLabel}>Featured Classes</p>
-          <p className={styles.statValue}>{featuredCount}</p>
+          <p className={styles.statLabel}>Scheduled Classes</p>
+          <p className={styles.statValue}>{totalScheduledClasses}</p>
         </div>
         <div className={styles.statCard}>
-          <p className={styles.statLabel}>Categories</p>
-          <p className={styles.statValue}>{categories.length}</p>
+          <p className={styles.statLabel}>Days with Classes</p>
+          <p className={styles.statValue}>{scheduledDays}</p>
         </div>
         <div className={styles.statCard}>
-          <p className={styles.statLabel}>Membership Tiers</p>
-          <p className={styles.statValue}>{memberships.length}</p>
-        </div>
-        <div className={styles.statCard}>
-          <p className={styles.statLabel}>Weekly Class Slots</p>
-          <p className={styles.statValue}>{totalSlots}</p>
+          <p className={styles.statLabel}>Registrations</p>
+          <p className={styles.statValue}>{registrations.length}</p>
         </div>
       </div>
 
@@ -137,8 +131,8 @@ export const initialScheduleTemplate = ${JSON.stringify(scheduleTemplate, null, 
             <a href="/admin/schedule" className={`${styles.btn} ${styles.btnSecondary}`}>
               Edit Schedule
             </a>
-            <a href="/admin/memberships" className={`${styles.btn} ${styles.btnSecondary}`}>
-              Update Pricing
+            <a href="/admin/registrations" className={`${styles.btn} ${styles.btnSecondary}`}>
+              View Registrations
             </a>
           </div>
         </div>
@@ -177,29 +171,6 @@ export const initialScheduleTemplate = ${JSON.stringify(scheduleTemplate, null, 
               Reset to Defaults
             </button>
           </div>
-        </div>
-      </div>
-
-      <div className={styles.card} style={{ marginTop: '1.5rem' }}>
-        <div className={styles.cardHeader}>
-          <h2 className={styles.cardTitle}>Featured on Homepage</h2>
-        </div>
-        <div className={styles.cardBody}>
-          {featuredCount === 0 ? (
-            <p style={{ color: '#666', margin: 0 }}>
-              No featured classes yet. Mark classes as featured to display them on the homepage.
-            </p>
-          ) : (
-            <ul style={{ margin: 0, paddingLeft: '1.25rem' }}>
-              {classes
-                .filter((c) => c.featured)
-                .map((c) => (
-                  <li key={c.id} style={{ marginBottom: '0.5rem' }}>
-                    <strong>{c.name}</strong> with {c.instructor}
-                  </li>
-                ))}
-            </ul>
-          )}
         </div>
       </div>
 
